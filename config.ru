@@ -1,8 +1,13 @@
-require_relative 'config/application'
+# frozen_string_literal: true
 
-@app = WebCodeBreackerRacker.new
+require './lib/racker'
 
-use Rack::Reloader, 0
-use Rack::Static, urls: ['/css', '/images'], root: 'public'
+app_codebreaker = Rack::Builder.new do
+  use Rack::Reloader, 0
+  use Rack::Static, urls: ['/stylesheets', '/views'], root: 'public'
+  use Rack::Session::Cookie, key: 'rack.session', secret: 'secret'
 
-run @app
+  run Racker
+end
+
+run app_codebreaker

@@ -1,2 +1,6 @@
-gem 'rack'
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
 gem 'morph_codebreaker'
+gem 'rack'

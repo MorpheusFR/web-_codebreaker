@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WEB page</title>
+    <script src="https://unpkg.com/wired-elements@latest/dist/wired-elements.bundled.min.js"></script>
+    <link rel="stylesheet" href="/stylesheets/application.css" type="text/css">
+  </head>
+  <body>
+    <div id='main_container'>
+        <div id="container">
+          <h1>You said '<%= word %>'</h1>
+            <p>Say somthing new</p>
+          <form method="post" action="/update_word">
+            <input name="word" type="text">
+            <input type="submit" value="Say!">
+          </form>
+        </div>
+    </div>
+  </body>
+</html>
