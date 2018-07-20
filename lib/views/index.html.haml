@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+%html
+  %head
+    %title Codebreaker
+    %link{ rel: 'shortcut icon', href: 'img/favicon/favicon.ico', type: 'image/x-icon' }
+    -# %link{ rel: "stylesheet", href: "https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css", integrity: "sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B", crossorigin: "anonymous"}
+    %link{ rel: 'stylesheet', href: '/css/application.css', type: 'text/css' }
+  %body
+    .container
+     
+      = render 'login_form'
+      -# = render 'game_session'
+      
+      -# Modal for RULES
+      %a.modal-trigger{:href => "#modal_rules"} Rules
+      #modal_rules.modal
+        .modal__dialog
+          %section.modal__content
+            %header.modal__header
+              %h2.modul__title Rules
+              %a.modal__close{:href => "#"}
+            .modal__body
+              %p.modal__text
+                The code-breaker then gets some number of chances to break the code.In each turn, the code-breaker makes a guess of four numbers.The code-maker then marks the guess with up to four + and - signs.
+                %br
+                  You have #{ATTEMPTS} attempts attempts and game answers with up to four pluses and minuses.
+                  %ul
+                    %li
+                      + (plus) indicates an exact match:
+                      %br
+                        one of the numbers in the guess is the same as one of the numbers in the secret code and in the same position.
+                      %li
+                        \- (minus) indicates a number match:
+                        %br
+                          one of the numbers in the guess is the same as one of the numbers in the secret code but in a different position.
+                        %h3 Tips  Tricks
+                        HINTS: type 'h' and game will show one  number from code to you
+                    %footer.modal__footer
+                      %a.modal__link{:href => "/"} Ok, I've read

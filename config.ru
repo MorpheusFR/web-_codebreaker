@@ -1,13 +1,6 @@
-# frozen_string_literal: true
+require './lib/app_codebreaker'
 
-require './lib/racker'
+use Rack::Reloader
+use Rack::Session::Cookie, key: 'rack.session', path: '/', secret: 'secret_code'
 
-app_codebreaker = Rack::Builder.new do
-  use Rack::Reloader, 0
-  use Rack::Static, urls: ['/stylesheets', '/views'], root: 'public'
-  use Rack::Session::Cookie, key: 'rack.session', secret: 'secret'
-
-  run Racker
-end
-
-run app_codebreaker
+run Rack::Cascade.new([Rack::File.new('public'), AppCodebreaker])

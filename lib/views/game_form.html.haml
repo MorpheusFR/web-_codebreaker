@@ -1,0 +1,18 @@
+%form{ class: 'game-form', action: '/check', method: 'post' }
+  .form-group.text-center
+    .container
+      .row
+        .col
+          %input{ class: 'form-control',
+                  type: 'text',
+                  name: 'breaker_code',
+                  placeholder: 'Enter your guess...',
+                  pattern: '^[1-6]{4}$',
+                  autofocus: 'true',
+                  required: 'true' }
+          %small{ id: 'gameHelp', class: 'form-text text-muted' }
+            You should enter 4 digit from range 1..6
+      .row
+        .col-6
+          %button{ type: 'submit', class: 'btn btn-primary btn-block' }
+            Check guess
