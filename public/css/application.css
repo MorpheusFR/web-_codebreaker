@@ -1,24 +1,24 @@
 
 body {
   background: url(../img/giphy_point.gif);
+  background: #ccc;
   background-repeat: no-repeat;
   background-size: 100%;
   font-family: Helvetica;
   font-size: 15px;
-  width: 94%;
+  width: 50%;
   margin: 0 auto;
   color: tomato;
 }
 
 #container {
-  background:rgb(30,30,40);
+  /* background:rgba(30,30,40, 0.5); */
   position: fixed;
   top: 50%;
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
-
   width: 50%;
   margin: 0 auto;
   background-color: #FFF;
@@ -27,11 +27,9 @@ body {
   margin-top: 20px;
 }
 
-div {
-  background:rgb(30,30,40);
-  border-radius: 10px;
-  wigth: 1000px;
-
+.login-form {
+  padding: 20px;
+  background: rgba(255,255,255,0.8);
 }
 
 /* FORM Style */
@@ -85,7 +83,7 @@ textarea {
 /* Modul window */
 
 *, *::after, *::before{
-  box-sizen: border-box;
+  box-sizing: border-box;
 }
 .modal-trigger {
   text-decoration: none;

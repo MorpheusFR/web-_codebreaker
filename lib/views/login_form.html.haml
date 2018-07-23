@@ -1,30 +1,12 @@
-.row
-  .col
-    .login-form-wrapper
-      %form{ class: 'login-form', action: '/', method: 'post' }
-        .form-group.text-center
-          
-          -# %input{ class: 'form-control',
-          -#         type: 'text',
-          -#         name: 'player_name',
-          -#         placeholder: 'Enter your name...',
-          -#         pattern: '^.*\S.*$',
-          -#         autofocus: 'true',
-          -#         required: 'true' }
-          -# %small{ id: 'loginHelp', class: 'form-text text-muted' }
-            For start game enter your name and submit form
-        -# %button{ class: 'btn btn-primary btn-block', type: 'submit' }
-        -#   Let's play
-        %form
-          %h4 Welcome to My Codebreaker!
-          %p If you want to play the game:
-          %p
-            = show_rules
-          %input.feedback-input{name: 'player_name',
-                                pattern: '^.*\S.*$', 
-                                placeholder: 'Enter your name...',
-                                type: 'text',
-                                autofocus: 'true',
-                                required: 'true' }/
-          -# %textarea.feedback-input{:name => "text", :placeholder => "Comment"}
-          %input{:type => "submit", :value => "PLAY"}/
+%form{ class: 'login-form', action: '/', method: 'post' }
+  .form-group.text-center
+    %form
+      %h4 Welcome to My Codebreaker!
+      %p If you want to play the game:
+      %input.feedback-input{name: 'player_name',
+                            pattern: '^.*\S.*$', 
+                            placeholder: 'Enter your name...',
+                            type: 'text',
+                            autofocus: 'true',
+                            required: 'true' }/
+      %input{:type => "submit", :value => "PLAY"}
