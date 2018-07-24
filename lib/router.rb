@@ -1,7 +1,8 @@
 module Routes
   APP_ROUTES = {
     '/' => ->(instance) { instance.index },
-    '/check' => ->(instance) { instance.check_guess },
+    '/index' => ->(instance) { instance.index },
+    '/game_session' => ->(instance) { instance.game_session },
     # '/hint' => ->(instance) { instance.show_hint },
     # '/restart' => ->(instance) { instance.game_restart },
     # '/save' => ->(instance) { instance.save_game_result },

@@ -2,10 +2,12 @@ require 'haml'
 require 'yaml'
 require 'codebreaker'
 require_relative 'router'
+require_relative 'game_session_store'
 
 # class AppCodebreaker
 class AppCodebreaker
   include Codebreaker
+  include GameSessionStore
 
   def self.call(env)
     new(env).response.finish
@@ -15,61 +17,78 @@ class AppCodebreaker
     @request = Rack::Request.new(env)
     @game = Codebreaker::Game.new
     @secret_code = @game.code_view_with_hint
+    @path_to_file = PATH_TO_LOG_FILES
+    @status = false
+    @player_name = nil
     @total_attempts = ATTEMPTS
     @hints = HINTS
     @hints_used = 0
-    @player_name = 'Ananimus'
-    # @player_name = response.player_name
-    # @match_result = ''
-    # @turn = 1
-    # @turn_statistic = {}
-
-    @path_to_file = PATH_TO_LOG_FILES
-    # @status = false
-    # @game_data_file_path = File.join(__dir__, 'game_data.yml')
-    # @scores = {}
   end
 
   def response
-    page = Routes::APP_ROUTES[@request.path]
-    page ? page.call(self) : Rack::Response.new(render('404'), 404)
+    case @request.path
+    when '/'
+      @request.session.clear
+      Rack::Response.new(render('index'))
+    when '/index' then Rack::Response.new(render('index'))
+    when '/game_session'
+      start_game unless @request.session[:game]
+      Rack::Response.new(render('game_session'))
+    when '/submit_guess'
+      submit_guess(@request.params['guess'])
+      Rack::Response.new { |response| response.redirect('/game') }
+    # when '/show_hint'
+    #   show_hint
+    #   Rack::Response.new { |response| response.redirect('/game') }
+    # when '/enter_name'
+    #   enter_name(@request.params['name'])
+    #   Rack::Response.new { |response| response.redirect('/best_results') }
+    # when '/best_results'
+    #   load_results
+    #   Rack::Response.new(render('best_results.html.erb'))
+    else Rack::Response.new(render('404'), 404)
+    end
   end
 
-  def index
-    # if @request.params['player_name']
-    #   self.player_name = @request.params['player_name'].strip unless player_name
-    #   self.game = Codebreaker::Game.new unless game
-    #   game.start
-    # end
-    Rack::Response.new(render 'index')
-  end
+  private
 
-  # def check_guess
-  #   player_code = @request.params['player_code']
-  #   # game.make_attempt(guess)
-  #   # @game.validate_turn(player_code)
-  #   start_game
-  #   # add_to_log
-  #   redirect_to '/'
+  # def load_results
+  #   @results = YAML.load(RgHwCodebreaker::ResultsAccessor.load_results_file)
+  #   @results_table_header = @results.shift
   # end
 
   def start_game
-    @game.validate_turn(player_code)
+    @player_name = @request.params[player_name]
+    @request.session[:game] = Codebreaker::Game.new
+    @request.session[:player_name] = @request.params[player_name]
+    @request.session[:game].code_view_with_hint
+    @request.session[:attempts] = []
+    @request.session[:show_hint] = false
   end
-  # def add_to_log
-  #   self.game_log = game_log || []
-  #   game_log << [guess, game.attempt_result]
-  # end
 
-  # def show_hint
-  #   self.hint = game.hint
-  #   redirect_to '/'
-  # end
+  def submit_guess(guess)
+    if @request.session[:game].valid_guess?(guess)
+      guess_result = @request.session[:game].check_guess(guess)
+      @request.session[:attempts] << { guess: guess, guess_result: guess_result }
+    else
+      @request.session[:error_msg] = 'Your input is invalid'
+    end
+  end
 
-  # def game_restart
-  #   @request.session.clear
-  #   redirect_to '/'
-  # end
+  def enter_name(player_name)
+    current_result = [player_name, Date.today, 10 - @request.session[:game].turns]
+    RgHwCodebreaker::ResultsAccessor.write_result_to_file(current_result)
+    @request.session[:notice_msg] = 'Your result saved'
+  end
+
+  def show_hint
+    @request.session[:show_hint] = true
+    @request.session[:hint] = if @request.session[:game].any_hints_left?
+                                "Hint: #{@request.session[:game].give_a_hint}***"
+                              else
+                                'No hints left :('
+                              end
+  end
 
   def render(template)
     path = File.expand_path("../views/#{template}.html.haml", __FILE__)
