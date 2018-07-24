@@ -29,8 +29,10 @@
     %input(autofocus="" name="guess" placeholder="****" required="" type="text")/
     %br/
     %input(type="submit" value="Submit guess")/
-  %form.show_hint(action="/show_hint" method="post")
-    %input(type="submit" value="Hint ❗")/
+  
+      %a.hint(action="/hint" method="post")
+    %input(type="submit" value="Hint")/
+
   - if @request.session[:show_hint]
     %p.hint= @request.session[:hint]
 - %i[notice_msg error_msg].each do |key|

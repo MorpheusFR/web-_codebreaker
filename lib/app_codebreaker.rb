@@ -30,7 +30,7 @@ class AppCodebreaker
     when '/'
       @request.session.clear
       Rack::Response.new(render('index'))
-    when '/index' then Rack::Response.new(render('index'))
+    when '/index' then Rack::Response.new(render('game_session'))
     when '/game_session'
       start_game unless @request.session[:game]
       Rack::Response.new(render('game_session'))
@@ -81,8 +81,8 @@ class AppCodebreaker
     @request.session[:notice_msg] = 'Your result saved'
   end
 
-  def show_hint
-    @request.session[:show_hint] = true
+  def hint
+    @request.session[:hint] = true
     @request.session[:hint] = if @request.session[:game].any_hints_left?
                                 "Hint: #{@request.session[:game].give_a_hint}***"
                               else
