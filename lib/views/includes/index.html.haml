@@ -1,0 +1,14 @@
+!!!5
+%html
+  = Haml::Engine.new(File.read('lib/views/includes/head.haml'))
+  %body
+    = Haml::Engine.new(File.read('lib/views/includes/header.haml'))
+    -# .page-content
+      
+    .container
+      
+      = render 'rules'
+        
+      = render 'hints'
+
+    = Haml::Engine.new(File.read('lib/views/includes/footer.haml')).render

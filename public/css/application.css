@@ -11,6 +11,16 @@ body {
   color: tomato;
 }
 
+a {
+  text-decoration: none;
+  padding: 1rem;
+  background: tomato;
+  display: inline-block;
+  border-radius: 5px;
+  color: white;
+  margin-top: 50px;
+}
+
 #gameHelp {
   padding: 0px;
 }

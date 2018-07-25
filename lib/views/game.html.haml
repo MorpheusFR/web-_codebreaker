@@ -1,0 +1,43 @@
+!!!5
+%html
+  %head
+    %meta{charset: 'utf-8'}
+    %title Codebreaker
+    %link{ rel: 'shortcut icon', href: 'img/favicon/favicon.ico', type: 'image/x-icon' }
+    %link{ rel: 'stylesheet', href: 'css/application.css', type: 'text/css' }
+  %body
+    .container
+      -# = render 'hints'
+      %a.modal-trigger{ href: 'hints', action: '/game', method: 'post' } Get Hint (#{@request.session[:coregame].hints})
+      %p
+        Game turn: #{@request.session[:coregame].turn}
+        %br
+        Secret code: #{@request.session[:secret_code]}
+        %br
+        Match result: #{@match_result}
+        #{@request.params[:player_code]}
+        
+        #{@request.session[:match_result]}
+        %br
+        You must unlock secret code: #{@secret_code}
+        %br
+        You have: #{@request.session[:coregame].hints} hint
+        %br
+        Hint used: #{@request.session[:coregame].hints_used}
+        %br
+        Tottal attempts: #{@request.session[:coregame].total_attempts}
+        %br
+        %form{ class: 'game-session', action: '/game', method: 'post' }
+          .form-group.text-center
+            %input{ class: 'form-control',
+                    type: 'text',
+                    name: 'player_code',
+                    placeholder: 'Enter your codebreaker...',
+                    pattern: '^[1-6]{4}$',
+                    autofocus: 'true',
+                    required: 'true' }
+            %small{ id: 'gameHelp', class: 'form-text text-muted' }
+              You should enter 4 digit from range 1..6
+            %button{ type: 'submit', class: 'btn btn-primary btn-block' }
+              Check code
+

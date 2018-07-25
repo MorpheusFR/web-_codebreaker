@@ -1,0 +1,12 @@
+-# %header.page-header
+-#   %p Header page
+-#   - @menu_items = {'index' => 'Главная', 'about' => 'О компании', 'contacts' => 'Контакты'};
+-#   %nav.menu.menu-main
+-#     %ul
+-#       -@menu_items.each do |key, value|
+-#         -if menu_current == key
+-#           %li.menu-item.current-menu-item
+-#             %span #{value}
+-#         -else
+-#           %li.menu-item
+-#             %a{:href => "#{key}.html"} #{value}

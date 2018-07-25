@@ -3,7 +3,7 @@
   %head
     %meta{charset: 'utf-8'}
     %title Codebreaker
-    %link{ rel: 'shortcut icon', href: 'img/favicon/favicon.ico', type: 'image/x-icon' }
+    %link{ rel: 'shortcut icon', href: 'public/img/favicon/favicon.ico', type: 'image/x-icon' }
     %link{ rel: 'stylesheet', href: '/css/application.css', type: 'text/css' }
   %body
     .container
@@ -12,19 +12,20 @@
       
       = render 'hints'
 
+      = render 'game_session'
       
-      - if @request.params['player_name']
-        Player name #{@player_name} 
-        = render 'game_session'
-        %p
-          You must unlock #{@secret_code}
-          %br
-          You have #{@hints} 
-          %br
-          Hint used #{@hints_used}
-          %br
-          Tottal attempts #{@total_attempts}
-          %br
-          Player code #{show_statistic}
-      - else
-        = render 'login_form'
+      -# - if @request.params['player_name']
+      -#   Player name #{@player_name} 
+      -#   = render 'game_session'
+      -#   %p
+      -#     You must unlock #{@secret_code}
+      -#     %br
+      -#     You have #{@hints} 
+      -#     %br
+      -#     Hint used #{@hints_used}
+      -#     %br
+      -#     Tottal attempts #{@total_attempts}
+      -#     %br
+      -#     Player code #{show_statistic}
+      -# - else
+      -#   = render 'login_form'
