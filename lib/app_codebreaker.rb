@@ -2,12 +2,10 @@ require 'haml'
 require 'yaml'
 require 'codebreaker'
 require_relative 'router'
-require_relative 'game_session_store'
 
 # class AppCodebreaker
 class AppCodebreaker
   include Codebreaker
-  include GameSessionStore
 
   def self.call(env)
     new(env).response.finish
@@ -16,13 +14,9 @@ class AppCodebreaker
   def initialize(env)
     @request = Rack::Request.new(env)
     @game = Codebreaker::Game.new
-    # @game_console = Codebreaker::GameConsole.new
-    @secret_code = @game.code_view_with_hint
     @path_to_file = PATH_TO_LOG_FILES
     @status = false
-    @player_name = nil
-    @total_attempts = total_attempts
-    @match_result = match_result
+    @player_name = @player_name
   end
 
   def response
@@ -30,22 +24,18 @@ class AppCodebreaker
     when '/'
       @request.session.clear
       Rack::Response.new(render('index'))
-    when '/index' then Rack::Response.new(render('game_session'))
-    when '/game'
-      start unless @request.session[:coregame]
+    when '/index'
+      start
+      user_name(@request.params['player_name'])
+      # play_session(@request.params['player_code'])
       Rack::Response.new(render('game'))
-    when '/game_session'
-      start_game unless @request.session[:game]
-      Rack::Response.new(render('game_session'))
-    when '/submit_code'
-      submit_code(@request.params['player_code'])
-      Rack::Response.new { |response| response.redirect('/game_session') }
+    when '/game'
+      # user_name(@request.params['player_name'])
+      play_session(@request.params['player_code'])
+      Rack::Response.new(render('game'))
     when '/hints'
       hints
       Rack::Response.new { |response| response.redirect('/game') }
-    when '/enter_name'
-      enter_name(@request.params['name'])
-      Rack::Response.new { |response| response.redirect('/score') }
     when '/score'
       load_results
       Rack::Response.new(render('score'))
@@ -56,83 +46,84 @@ class AppCodebreaker
   private
 
   def start
-    @game = Codebreaker::Game.new
-    @secret_code = @game.code_view_with_hint
-    @request.session[:coregame] = @game
+    @request.session[:coregame] = @request.params['player_name']
   end
 
-  def submit_code(input_code='1111')
-    @request.session[:coregame].validate_turn(input_code)
-
-    # player_result = @request.session[:coregame].match_result
-    # @request.session[:coregame].validate_turn(input_code)
-    # @request.session[:game].result_on_input_data(user_input)
-    # @request.session[:attempts] << { input_code: input_code, player_result: player_result }
+  def play_session(input_data)
+    show_statistic
+    result_on_input_data(input_data)
+    if @game.winner? || @game.hints.zero?
+    end
+    @game.winner? ? the_view_for_the_winner : the_view_for_the_loser
   end
 
   def hints
-    @request.session[:coregame].get_a_hint
+    @game.get_a_hint
   end
 
-  def secret_code
-    @secret_code
+  def show_statistic
+    @statistic = []
+    @statistic.push('Total attempt = ' + @game.total_attempts.to_s,
+                    'Secret code = ' + @game.code_view_with_hint,
+                    'Match result = ' + @game.match_result,
+                    'Hints = ' + @game.hints.to_s)
   end
 
-  def input_code
-    @request.params[player_code]
+  def the_view_for_the_winner
+    WON
+    @status = true
+    finish_or_reset_game
   end
 
-  def validate_turn
-    @request.session[:coregame].validate_turn(@request.params[input_code])
-    @match_result = @request.session[:match_result]
-    @request.session[:coregame].counter_attepmpts_and_turn
+  def the_view_for_the_loser
+    THE_HINTS_ENDED
+    @game.code_view_with_hint
+    LOOS
+    finish_or_reset_game
   end
 
-  def match_result
-    @request.session[:total_attempts]
+  def finish_or_reset_game
+    save_result
+    RESTART_OR_BREAK
+    start # if input_data == 'game'
   end
 
-  def total_attempts
-    @request.session[:total_attempts]
+  def save_result
+    File.open(@path_to_file, 'a') do |f|
+      f.puts get_data_to_save_statistic
+    end
   end
 
-  # def load_results
-  #   @results = YAML.load(RgHwCodebreaker::ResultsAccessor.load_results_file)
-  #   @results_table_header = @results.shift
-  # end
+  def user_name(player)
+    @player_name = player
+  end
 
-  # def start_game
-  #   @player_name = @request.params[player_name]
-  #   @request.session[:game] = Codebreaker::Game.new
-  #   @request.session[:player_name] = @request.params[player_name]
-  #   @request.session[:game].code_view_with_hint
-  #   @request.session[:attempts] = []
-  #   @request.session[:hint]
-  # end
+  def get_data_to_save_statistic
+    # @player_name
+    game_result = @status ? 'Win' : 'Loos'
+    session_statistic = @game.turn_statistic
+    log = { @player_name.to_s => [
+                              "Date: #{session_statistic}",
+                              'hints geting' => @game.hints_used,
+                              'Status of game' => game_result
+                              ] }
+  end
 
-  # def submit_guess(input_code)
-  #   if @request.session[:game].validate_turn(input_code)
-  #     player_result = @request.session[:game].match_result
-  #     @request.session[:attempts] << { input_code: input_code, player_result: player_result }
-  #   else
-  #     @request.session[:error_msg] = 'Your input is invalid'
-  #   end
-  # end
+  def result_on_input_data(input_data)
+    begin
+      @game.validate_turn input_data
+    rescue ArgumentError
+      'ArgumentError message: invalid value, try retrying!'
+    end
+  end
 
-  # def enter_name(player_name)
-  #   current_result = [player_name, Date.today, 10 - @request.session[:game].turns]
-  #   Codebreaker::ResultsAccessor.write_result_to_file(current_result)
-  #   @request.session[:notice_msg] = 'Your result saved'
-  # end
+  def show_congrats
+    GREETING_MESSAGE
+  end
 
-  # def hint
-  #   @request.session[:hint] = true
-  #   @request.session[:hint] = if @request.session[:game].any_hints_left?
-  #                               "Hint: #{@request.session[:game].get_a_hint}***"
-  #                             else
-  #                               'No hints left :('
-  #                             end
-  # end
+  def show_rules
+    RULES
+  end
 
   def render(template)
     path = File.expand_path("../views/#{template}.html.haml", __FILE__)

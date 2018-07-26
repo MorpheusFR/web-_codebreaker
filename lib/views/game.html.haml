@@ -7,26 +7,28 @@
     %link{ rel: 'stylesheet', href: 'css/application.css', type: 'text/css' }
   %body
     .container
-      -# = render 'hints'
-      %a.modal-trigger{ href: 'hints', action: '/game', method: 'post' } Get Hint (#{@request.session[:coregame].hints})
+      = render 'rules'
+      Hello #{@player_name}
+      = render 'hints'
       %p
-        Game turn: #{@request.session[:coregame].turn}
+        hints #{@game.hints}
         %br
-        Secret code: #{@request.session[:secret_code]}
+        hints_used #{@game.hints_used}
         %br
-        Match result: #{@match_result}
-        #{@request.params[:player_code]}
-        
-        #{@request.session[:match_result]}
+        total_attempts #{@game.total_attempts}
         %br
-        You must unlock secret code: #{@secret_code}
+        match_result #{@game.match_result}
         %br
-        You have: #{@request.session[:coregame].hints} hint
+        turn #{@game.turn}
         %br
-        Hint used: #{@request.session[:coregame].hints_used}
+        turn_statistic #{@game.turn_statistic}
         %br
-        Tottal attempts: #{@request.session[:coregame].total_attempts}
-        %br
+        #{@game.code_view_with_hint}
+        Params #{@request.params["player_code"]}
+        -# #{input_data.to_s}
+        -# #{@request.params["player_code"] == input_data.to_s}
+        #{@statistic}
+
         %form{ class: 'game-session', action: '/game', method: 'post' }
           .form-group.text-center
             %input{ class: 'form-control',

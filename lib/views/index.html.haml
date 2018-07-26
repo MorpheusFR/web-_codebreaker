@@ -10,22 +10,9 @@
       -# Modal for RULES
       = render 'rules'
       
-      = render 'hints'
-
-      = render 'game_session'
       
-      -# - if @request.params['player_name']
-      -#   Player name #{@player_name} 
-      -#   = render 'game_session'
-      -#   %p
-      -#     You must unlock #{@secret_code}
-      -#     %br
-      -#     You have #{@hints} 
-      -#     %br
-      -#     Hint used #{@hints_used}
-      -#     %br
-      -#     Tottal attempts #{@total_attempts}
-      -#     %br
-      -#     Player code #{show_statistic}
-      -# - else
-      -#   = render 'login_form'
+      - if @request.params['player_name']
+        = render 'game'
+
+      - else
+        = render 'login_form'
