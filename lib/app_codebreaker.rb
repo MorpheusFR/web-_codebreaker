@@ -21,29 +21,40 @@ class AppCodebreaker
 
   def response
     case @request.path
-    when '/'
+    when '/' #then index
       @request.session.clear
-      Rack::Response.new(render('index'))
-    when '/index'
-      start
-      user_name(@request.params['player_name'])
-      # play_session(@request.params['player_code'])
-      Rack::Response.new(render('game'))
-    when '/game'
-      # user_name(@request.params['player_name'])
-      play_session(@request.params['player_code'])
-      Rack::Response.new(render('game'))
-    when '/hints'
-      hints
-      Rack::Response.new { |response| response.redirect('/game') }
-    when '/score'
-      load_results
-      Rack::Response.new(render('score'))
+      index
+    when '/index' then index
+    when '/game' then game
+    when '/hint' then hint
+    when '/score' then score
     else Rack::Response.new(render('404'), 404)
     end
   end
 
   private
+
+  def index
+    start
+    user_name(@request.params['player_name'])
+    Rack::Response.new(render('game'))
+  end
+
+  def game
+    # user_name(@request.params['player_name'])
+    play_session(@request.params['player_code'])
+    Rack::Response.new(render('game'))
+  end
+
+  def hint
+    @game.get_a_hint
+      # Rack::Response.new { |response| response.redirect('/game') }
+  end
+
+  def score
+    load_results
+    Rack::Response.new(render('score'))
+  end
 
   def start
     @request.session[:coregame] = @request.params['player_name']
@@ -55,10 +66,6 @@ class AppCodebreaker
     if @game.winner? || @game.hints.zero?
     end
     @game.winner? ? the_view_for_the_winner : the_view_for_the_loser
-  end
-
-  def hints
-    @game.get_a_hint
   end
 
   def show_statistic
