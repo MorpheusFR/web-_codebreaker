@@ -8,11 +8,8 @@
   %body
     .container
       -# Modal for RULES
-      = render 'rules'
+      -# = render 'rules'
       
-      
+      = render 'game'
       - if @request.params['player_name']
-        = render 'game'
-
-      - else
         = render 'login_form'

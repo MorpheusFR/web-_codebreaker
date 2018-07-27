@@ -1,9 +1,9 @@
-%form{ class: 'login-form', action: 'index', method: 'post' }
+%form{ class: 'login-form', action: 'game', method: 'post' }
   .form-group.text-center
     %form
       %h4 Welcome to My Codebreaker!
       %p If you want to play the game:
-      %input.feedback-input{name: 'player_name',
+      %input.feedback-input{name: 'name',
                             pattern: '^.*\S.*$', 
                             placeholder: 'Enter your name...',
                             type: 'text',
