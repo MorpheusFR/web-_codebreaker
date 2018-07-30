@@ -22,60 +22,48 @@ class AppCodebreaker
     case @request.path
     when '/' then index
     when '/index' then game
-    when '/game' then start
+    # when '/game' then start
+    when '/check_data' then check_data #play_session
     when '/hint' then hint
+    when '/login' then login
     when '/score' then score
     else Rack::Response.new(render('404'), 404)
     end
   end
 
-  private
+  def hint
+    @game.get_a_hint
+    redirect_to('/')
+  end
 
-  def index
-    # start
-    # @request.session.clear
-    @request.session[:name]
-    @request.params['name']
-    user_name(@request.params['name'])
-    Rack::Response.new(render('index'))
+  def check_data
+    # result = @game.match_result
+    @game.validate_turn(@request.params['player_code'])
+    # show_statistic
+    if @game.match_result == '++++'
+      @status = 'Won'
+    else
+      @status = 'Loos'
+    end
+    
+    if @game.hints == 0 || @game.total_attempts <= 0 && @game.turns >= 6
+      @status = 'Loos'
+      redirect_to('/login')
+    else
+      @status = 'Won'
+    end
+    redirect_to('/')
   end
 
   def game
-    # @game.validate_turn(@request.params['player_code'])
     result = @game.match_result
-    # save_game
-    @request.session[:game_status] = 'won' if result == '++++'
-
-    # redirect_to('/')
+    @request.session[:game_status] = 'won' if @game.match_result == '++++'
+    if @game.match_result == '++++'
+      @status = 'Won'
+    end 
     start
-    @user_name = @request.params['name']
-    
+    # @user_name = @request.params['name']
     redirect_to('/')
-  end
-
-  def hint
-    @game.get_a_hint
-    @request.session[:hint] = @game.hints
-    @request.session[:hints_used] = @game.hints_used
-    redirect_to('/')
-  end
-
-  def score
-    load_results
-    Rack::Response.new(render('score'))
-  end
-
-  def start
-    play_session
-    redirect_to('/')
-  end
-
-  def play_session #(input_data)
-    show_statistic
-    #result_on_input_data(@request.params['player_code'])
-    if @game.winner? || @game.hints.zero?
-    end
-    @game.winner? ? the_view_for_the_winner : the_view_for_the_loser
   end
 
   def show_statistic
@@ -86,13 +74,65 @@ class AppCodebreaker
                     'Hints = ' + @game.hints.to_s)
   end
 
+  def input_data
+    input_data = @request.params['player_code']
+    check_data(input_data)
+  end
+
+  def login
+    @player_name = @request.params['name']
+    @request.session[:game_status]
+    get_data_to_save_statistic
+  end
+
+  def get_data_to_save_statistic
+    @player_name = 
+    game_result = @status ? 'Win' : 'Loos'
+    session_statistic = @game.turn_statistic
+    log = { @player_name.to_s => [
+                              "Date: #{session_statistic}",
+                              'hints geting' => @game.hints_used,
+                              'Status of game' => game_result
+                              ] }
+  end
+
+  private
+
+  def index
+    # @request.session.clear
+    # @request.session[:name]
+    # @request.params['name']
+    # user_name(@request.params['name'])
+    # start
+    Rack::Response.new(render('index'))
+    # result = @game.match_result
+    # @request.session[:game_status] = 'won' if result == '++++'
+  end
+
+  def score
+    load_results
+    Rack::Response.new(render('score'))
+  end
+
+  def start
+    play_session
+    redirect_to('/index')
+  end
+
+  def play_session
+    show_statistic
+    if @game.winner? || @game.hints.zero?
+
+    end
+    @game.winner? ? the_view_for_the_winner : the_view_for_the_loser
+  end
+
   def the_view_for_the_winner
     @status = 'Win'
     reset_game
   end
 
   def the_view_for_the_loser
-    # @request.session[:game].code_view_with_hint
     @game.code_view_with_hint
     @status = 'Loos'
     reset_game
@@ -111,17 +151,7 @@ class AppCodebreaker
     end
   end
 
-
-  def get_data_to_save_statistic
-    # @player_name
-    game_result = @status ? 'Win' : 'Loos'
-    session_statistic = @game.turn_statistic
-    log = { @player_name.to_s => [
-                              "Date: #{session_statistic}",
-                              'hints geting' => @game.hints_used,
-                              'Status of game' => game_result
-                              ] }
-  end
+  
 
   def result_on_input_data(input_data)
     begin

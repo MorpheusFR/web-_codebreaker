@@ -1,13 +1,3 @@
-{""=>["Date: {1=>\"1234\"}", {"hints geting"=>0, "Status of game"=>"Win"}]}
-{""=>["Date: {1=>\"1123\"}", {"hints geting"=>0, "Status of game"=>"Win"}]}
-{""=>["Date: {1=>\"1234\"}", {"hints geting"=>0, "Status of game"=>"Win"}]}
-{""=>["Date: {1=>\"1111\"}", {"hints geting"=>0, "Status of game"=>"Win"}]}
-{""=>["Date: {1=>\"1234\"}", {"hints geting"=>0, "Status of game"=>"Win"}]}
-{""=>["Date: {1=>\"1234\"}", {"hints geting"=>0, "Status of game"=>"Win"}]}
-{""=>["Date: {1=>\"1234\"}", {"hints geting"=>0, "Status of game"=>"Win"}]}
-{""=>["Date: {1=>\"1111\"}", {"hints geting"=>0, "Status of game"=>"Win"}]}
-{""=>["Date: {1=>\"1235\"}", {"hints geting"=>0, "Status of game"=>"Win"}]}
-{""=>["Date: {1=>\"1111\"}", {"hints geting"=>0, "Status of game"=>"Win"}]}
 {""=>["Date: {}", {"hints geting"=>0, "Status of game"=>"Win"}]}
-{""=>["Date: {}", {"hints geting"=>3, "Status of game"=>"Win"}]}
-{""=>["Date: {}", {"hints geting"=>1, "Status of game"=>"Win"}]}
+{""=>["Date: {}", {"hints geting"=>2, "Status of game"=>"Win"}]}
+{""=>["Date: {}", {"hints geting"=>0, "Status of game"=>"Win"}]}

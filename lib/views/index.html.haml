@@ -7,9 +7,7 @@
     %link{ rel: 'stylesheet', href: '/css/application.css', type: 'text/css' }
   %body
     .container
-      -# Modal for RULES
-      -# = render 'rules'
-      
+
       = render 'game'
-      - if @request.params['player_name']
-        = render 'login_form'
+      -# - if @request.params['player_name']
+      -#   = render 'login_form'

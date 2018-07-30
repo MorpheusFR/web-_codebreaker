@@ -11,17 +11,24 @@
       -# Hello #{@request.session[:player_name]}
       = render 'hints'
       %p
-        hints #{@request.session[:hints]}
-        %br 
-        hints_used #{@request.session[:hints_used]}
+        %h1 #{@game.code_view_with_hint}
+        %h2 code_view_with_hint
         %br
-        total_attempts #{@request.session[:total_attempts]}
-        %br
-        match_result #{@request.session[:match_result]}
-        %br
-        turn #{@request.session[:turn]}
-        %br
-        turn_statistic #{@request.session[:turn_statistic]}
+      %form{ class: 'game', action: '/check_data', method: 'post' }
+        .form-group.text-center
+          %input{ class: 'form-control',
+                  type: 'text',
+                  name: 'player_code',
+                  placeholder: 'Enter your codebreaker...',
+                  pattern: '^[1-6]{4}$',
+                  autofocus: 'true',
+                  required: 'true' }
+          %small{ id: 'gameHelp', class: 'form-text text-muted' }
+            You should enter 4 digit from range 1..6
+          %button{ type: 'submit', class: 'btn btn-block' }
+            Check code
+
+      %p
         %br ----------------------------------
         hints #{@game.hints}
         %br
@@ -35,24 +42,13 @@
         %br
         turn_statistic #{@game.turn_statistic}
         %br
-        #{@game.code_view_with_hint}
+        
         Params #{@request.params["player_code"]}
         -# #{input_data.to_s}
         -# #{@request.params["player_code"] == input_data.to_s}
-        #{@statistic}
-        #{@status}
+        %br
+        statistic #{@statistic}
+        %br
+        status #{@status}
 
-        %form{ class: 'game', action: '/game', method: 'post' }
-          .form-group.text-center
-            %input{ class: 'form-control',
-                    type: 'text',
-                    name: 'player_code',
-                    placeholder: 'Enter your codebreaker...',
-                    pattern: '^[1-6]{4}$',
-                    autofocus: 'true',
-                    required: 'true' }
-            %small{ id: 'gameHelp', class: 'form-text text-muted' }
-              You should enter 4 digit from range 1..6
-            %button{ type: 'submit', class: 'btn btn-block' }
-              Check code
 
