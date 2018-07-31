@@ -8,6 +8,9 @@
   %body
     .container
 
-      = render 'game'
+      - if @status == 'Won' || @status == 'Loos'
+        = render 'login_form'
+      - else
+        = render 'game'
       -# - if @request.params['player_name']
       -#   = render 'login_form'

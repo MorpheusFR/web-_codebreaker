@@ -7,13 +7,10 @@
     %link{ rel: 'stylesheet', href: 'css/application.css', type: 'text/css' }
   %body
     .container
-      = render 'rules'
-      -# Hello #{@request.session[:player_name]}
+      = render 'rules' 
       = render 'hints'
-      %p
-        %h1 #{@game.code_view_with_hint}
-        %h2 code_view_with_hint
-        %br
+      = render 'reset_game'
+      %h2 code_view_with_hint #{@game.code_view_with_hint}
       %form{ class: 'game', action: '/check_data', method: 'post' }
         .form-group.text-center
           %input{ class: 'form-control',

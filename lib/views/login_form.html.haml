@@ -1,12 +1,13 @@
-%form{ class: 'login-form', action: 'login', method: 'post' }
+%form{ class: 'login-form', action: 'save_result', method: 'post' }
   .form-group.text-center
     %form
-      %h4 Welcome to My Codebreaker!
-      %p If you want to play the game:
+      %h4 My Codebreaker!
+      %p If you want to save result, input name:
       %input.feedback-input{name: 'name',
                             pattern: '^.*\S.*$', 
                             placeholder: 'Enter your name...',
                             type: 'text',
                             autofocus: 'true',
-                            required: 'true' }/
-      %input{:type => "submit", :value => "PLAY"}
+                            required: 'true',
+                            value: 'Anonymous' }/
+      %input{:type => "submit", :value => "Save Result"}

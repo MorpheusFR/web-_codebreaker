@@ -15,20 +15,26 @@ class AppCodebreaker
     @request = Rack::Request.new(env)
     @game = load_game
     @path_to_file = PATH_TO_LOG_FILES
-    @status = 'Loos'
+    @status = ''
   end
 
   def response
     case @request.path
     when '/' then index
-    when '/index' then game
+    # when '/index' then game
     # when '/game' then start
     when '/check_data' then check_data #play_session
     when '/hint' then hint
     when '/login' then login
+    when '/save_result' then save_result
+    when '/reset' then reset_game
     when '/score' then score
     else Rack::Response.new(render('404'), 404)
     end
+  end
+
+  def index
+    Rack::Response.new(render('index'))
   end
 
   def hint
@@ -37,22 +43,16 @@ class AppCodebreaker
   end
 
   def check_data
-    # result = @game.match_result
     @game.validate_turn(@request.params['player_code'])
-    # show_statistic
-    if @game.match_result == '++++'
+    # @status = 'Won' if @game.match_result == '++++'
+    if @game.winner? #|| @game.total_attempts <= 0 && @game.turns > 6
       @status = 'Won'
-    else
-      @status = 'Loos'
-    end
-    
-    if @game.hints == 0 || @game.total_attempts <= 0 && @game.turns >= 6
-      @status = 'Loos'
       redirect_to('/login')
-    else
-      @status = 'Won'
     end
-    redirect_to('/')
+    if @game.total_attempts <= 0 || @game.hints.zero?
+      @status = 'Loos'
+      redirect_to('/')
+    end
   end
 
   def game
@@ -86,7 +86,7 @@ class AppCodebreaker
   end
 
   def get_data_to_save_statistic
-    @player_name = 
+    @player_name = @request.params['name']
     game_result = @status ? 'Win' : 'Loos'
     session_statistic = @game.turn_statistic
     log = { @player_name.to_s => [
@@ -97,17 +97,6 @@ class AppCodebreaker
   end
 
   private
-
-  def index
-    # @request.session.clear
-    # @request.session[:name]
-    # @request.params['name']
-    # user_name(@request.params['name'])
-    # start
-    Rack::Response.new(render('index'))
-    # result = @game.match_result
-    # @request.session[:game_status] = 'won' if result == '++++'
-  end
 
   def score
     load_results
@@ -122,36 +111,15 @@ class AppCodebreaker
   def play_session
     show_statistic
     if @game.winner? || @game.hints.zero?
-
+      
     end
     @game.winner? ? the_view_for_the_winner : the_view_for_the_loser
   end
 
-  def the_view_for_the_winner
-    @status = 'Win'
-    reset_game
-  end
-
-  def the_view_for_the_loser
-    @game.code_view_with_hint
-    @status = 'Loos'
-    reset_game
-  end
-
   def reset_game
-    save_result
     @request.session.clear
-
     redirect_to('/')
   end
-
-  def save_result
-    File.open(@path_to_file, 'a') do |f|
-      f.puts get_data_to_save_statistic
-    end
-  end
-
-  
 
   def result_on_input_data(input_data)
     begin
@@ -165,8 +133,11 @@ class AppCodebreaker
     @request.session[:game] ||= Codebreaker::Game.new
   end
 
-  def save_game
+  def save_result
     @request.session[:game] = @game
+    File.open(@path_to_file, 'a') do |f|
+      f.puts get_data_to_save_statistic
+    end
   end
 
   def render(template)
